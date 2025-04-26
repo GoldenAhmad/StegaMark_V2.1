@@ -9,6 +9,7 @@ import math
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import base64 # Potentially useful for returning small images/data
 import traceback # Import traceback at the top
+from werkzeug.exceptions import HTTPException # Import HTTPException
 
 # --- Helper: Data Conversion ---
 
@@ -428,21 +429,33 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Max upload size 16MB
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', os.urandom(24)) # Use env var or random
 
-# --- NEW: Global Error Handler ---
-@app.errorhandler(Exception) # Catch all unhandled exceptions
-def handle_exception(e):
-    """Handles unexpected errors and ensures a JSON response."""
-    # Log the full error traceback to the server console/logs for debugging
-    print(f"--- Unhandled Exception Caught by Global Handler ---", file=sys.stderr)
+# --- Refined Global Error Handlers ---
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    """Handles HTTP errors (e.g., 404, 405, 400) and returns JSON."""
+    # Log the specific HTTP error
+    print(f"--- HTTP Exception Caught: {e.code} {e.name} ---", file=sys.stderr)
+    # traceback.print_exc() # Optional: uncomment to log tracebacks for HTTP errors too
+
+    # Create a JSON response from the exception details
+    response = jsonify(error=e.name, description=e.description)
+    response.status_code = e.code
+    return response
+
+@app.errorhandler(Exception) # Catch all other non-HTTP exceptions
+def handle_generic_exception(e):
+    """Handles unexpected server errors (500) and ensures a JSON response."""
+    # Log the full error traceback - THIS IS IMPORTANT FOR DEBUGGING
+    print(f"--- Unhandled Non-HTTP Exception Caught by Global Handler (Potential 500 Error) ---", file=sys.stderr)
     traceback.print_exc()
     print(f"--- End Traceback ---", file=sys.stderr)
 
-    # For all other exceptions (likely causing 500 Internal Server Error)
-    # Return a generic JSON error response
-    response = jsonify({"error": "An internal server error occurred on the server."})
+    # Return a generic JSON error response for internal server errors
+    response = jsonify({"error": "An internal server error occurred. Please check server logs."})
     response.status_code = 500 # Set the status code to 500
     return response
-# --- End NEW Error Handler ---
+# --- End Refined Error Handlers ---
 
 @app.route('/')
 def index():
