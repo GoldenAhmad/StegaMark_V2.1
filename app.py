@@ -8,6 +8,7 @@ import sys
 import math
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import base64 # Potentially useful for returning small images/data
+import traceback # Import traceback at the top
 
 # --- Helper: Data Conversion ---
 
@@ -427,6 +428,22 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Max upload size 16MB
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', os.urandom(24)) # Use env var or random
 
+# --- NEW: Global Error Handler ---
+@app.errorhandler(Exception) # Catch all unhandled exceptions
+def handle_exception(e):
+    """Handles unexpected errors and ensures a JSON response."""
+    # Log the full error traceback to the server console/logs for debugging
+    print(f"--- Unhandled Exception Caught by Global Handler ---", file=sys.stderr)
+    traceback.print_exc()
+    print(f"--- End Traceback ---", file=sys.stderr)
+
+    # For all other exceptions (likely causing 500 Internal Server Error)
+    # Return a generic JSON error response
+    response = jsonify({"error": "An internal server error occurred on the server."})
+    response.status_code = 500 # Set the status code to 500
+    return response
+# --- End NEW Error Handler ---
+
 @app.route('/')
 def index():
     # Serve index.html from the root directory
@@ -475,8 +492,6 @@ def handle_watermark_request():
     if tile_spacing < 0:
         print(f"Warning: Invalid negative tile_spacing '{tile_spacing}' received. Using 0.", file=sys.stderr)
         tile_spacing = 0
-    # Angle validation (optional, keep within reasonable bounds if desired)
-    # tile_angle = max(-360, min(360, tile_angle)) # Example: Limit angle
 
     # --- (Keep existing file extension validation) ---
     file_ext = os.path.splitext(image_file.filename)[1].lower()
@@ -583,12 +598,22 @@ def handle_watermark_request():
         else:
              return jsonify({"error": "Watermarking process failed unexpectedly."}), 500
 
-    # --- (Keep existing error handling: ValueError, generic Exception) ---
-    except ValueError as e: return jsonify({"error": str(e)}), 400
+    except ValueError as e:
+        # This specific handler is still useful for clear client messages
+        print(f"ValueError in /watermark: {e}", file=sys.stderr) # Optional: Log specific catches too
+        return jsonify({"error": str(e)}), 400
+    except UnidentifiedImageError as e:
+        # Keep specific handlers if they exist or add them
+        print(f"UnidentifiedImageError in /watermark: {e}", file=sys.stderr)
+        return jsonify({"error": f"Cannot identify image file: {e}"}), 400
     except Exception as e:
-        print(f"Error during watermarking process: {e}", file=sys.stderr)
+        # This will now likely be caught by the global handler,
+        # but keeping it doesn't hurt (global handler runs if this re-raises or isn't caught)
+        print(f"Generic Exception in /watermark: {e}", file=sys.stderr)
         import traceback
         traceback.print_exc()
+        # Let the global handler manage the final JSON response for unexpected errors
+        # Or explicitly return JSON here too as a safeguard:
         return jsonify({"error": "An internal server error occurred during watermarking."}), 500
 
 @app.route('/extract', methods=['POST'])
@@ -703,8 +728,6 @@ def handle_extract_request():
         import traceback
         traceback.print_exc()
         return jsonify({"error": "An internal server error occurred during extraction."}), 500
-    
-# --- (Keep existing code after this function) ---
 
 # --- Command Line Interface Functions (Updated) ---
 
