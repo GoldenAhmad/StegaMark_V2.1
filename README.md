@@ -87,7 +87,9 @@ StegaMark_V2.1/
 
 ## Screenshots
 
-> *(You can add screenshots here to show how the app looks!)*
+![image](https://github.com/user-attachments/assets/5e9094e6-477e-4c76-b788-609106ec7ec5)
+
+
 
 ---
 
