@@ -432,7 +432,7 @@ app = Flask(__name__, static_folder='.') # Serve static files from root for simp
 # For production, restrict origins to your GitHub Pages URL.
 # Example for production:
 # CORS(app, resources={r"/*": {"origins": "https://goldenahmad.github.io"}})
-CORS(app) # <<<<<<<<<<< INITIALIZE CORS. Allows all origins by default.
+CORS(app, resources={r"/*": {"origins": "https://goldenahmad.github.io"}}) # <<<<<<<<<<< INITIALIZE CORS. Allows all origins by default.
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Max upload size 16MB
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
