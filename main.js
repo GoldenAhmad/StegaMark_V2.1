@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---------- Configuration ----------
     // IMPORTANT: Replace this with the *actual URL* of your deployed Python backend
     // For local testing (if you run app.py on your machine): const BACKEND_URL = 'http://127.0.0.1:5000';
-    const BACKEND_URL = 'https://your-deployed-backend-url.com'; // e.g., 'https://yourusername.pythonanywhere.com'
+    const BACKEND_URL = 'https://0QuQ.pythonanywhere.com'; // e.g., 'https://yourusername.pythonanywhere.com'
     // ---------- END Configuration ----------
 
     // ---------- Theme Toggle ----------
