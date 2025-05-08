@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StegaMark Pro - Image Watermarking</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Link to your Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen font-sans">
+    <header class="header-gradient text-white py-5 px-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold flex items-center">
+                    <img src="StegaMarkLogo.webp" alt="StegaMark Logo" class="h-10 mr-3"> StegaMark Pro
+                </h1>
+                <span class="ml-3 text-xs bg-gray-100 dark:bg-gray-700 text-blue-500 px-2 py-0.5 rounded-full font-semibold shadow">v2.1</span>
+            </div>
+            <div class="flex items-center mt-4 md:mt-0">
+                 <span class="text-sm mr-3 hidden sm:inline">Toggle Theme</span>
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <i id="theme-icon-sun" class="fas fa-sun text-xl"></i>
+                    <i id="theme-icon-moon" class="fas fa-moon text-xl hidden"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Tabs for Navigation -->
+        <div class="tabs flex justify-center mb-8 border-b border-gray-200 dark:border-gray-700">
+            <div id="tab-watermark" class="tab active">
+                <i class="fas fa-signature mr-2"></i> Add Watermark
+            </div>
+            <div id="tab-extract" class="tab">
+                 <i class="fas fa-search mr-2"></i> Extract Watermark
+            </div>
+            <div id="tab-code" class="tab">
+                 <i class="fas fa-code mr-2"></i> Python Code
+            </div>
+        </div>
+
+        <!-- Add Watermark Section -->
+        <div id="section-watermark" class="section">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Control Panel -->
+                <div class="card p-6 col-span-1">
+                    <h2 class="text-xl font-bold mb-6 text-primary dark:text-secondary flex items-center"><i class="fas fa-sliders-h mr-2"></i> Settings</h2>
+
+                    <!-- Image Upload -->
+                    <div class="mb-6">
+                        <label for="imageUpload" class="input-label">Source Image</label>
+                        <input type="file" id="imageUpload" accept="image/png, image/jpeg" class="file-input">
+                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload PNG or JPG image.</p>
+                    </div>
+
+                    <!-- Watermark Type Buttons -->
+                    <div class="mb-6">
+                        <label class="input-label">Watermark Type</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button data-wm-type="visible-text" class="btn-tab active"><i class="fas fa-font mr-1"></i> Text</button>
+                            <button data-wm-type="visible-logo" class="btn-tab"><i class="far fa-image mr-1"></i> Logo</button>
+                            <button data-wm-type="invisible" class="btn-tab"><i class="fas fa-eye-slash mr-1"></i> Invisible</button>
+                        </div>
+                    </div>
+
+                     <!-- Visible Watermark Options (Shared for Text/Logo) -->
+                    <div id="visible-watermark-options" class="mb-6 space-y-4">
+                        <!-- Text Specific -->
+                        <div id="watermark-text-options">
+                            <label for="watermarkText" class="input-label">Watermark Text</label>
+                            <input type="text" id="watermarkText" placeholder="Your text here" value="© StegaMark" class="input-field">
+                        </div>
+                        <!-- Logo Specific -->
+                        <div id="watermark-logo-options" class="hidden">
+                             <label for="logoUpload" class="input-label">Watermark Logo</label>
+                             <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/gif, image/bmp" class="file-input"> <!-- Allow more types for visible logo -->
+                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload logo (PNG recommended).</p>
+                             <!-- Logo Scale (Moved inside logo options for clarity) -->
+                             <div>
+                                <label for="logoScale" class="input-label flex justify-between mt-2">Logo Scale <span id="logoScaleValue" class="font-mono">15%</span></label>
+                                <input type="range" id="logoScale" min="5" max="50" value="15" class="range-slider">
+                             </div>
+                         </div>
+                         <!-- Common Visible Options -->
+                         <div>
+                            <label for="opacity" class="input-label flex justify-between">Opacity <span id="opacityValue" class="font-mono">50%</span></label>
+                            <input type="range" id="opacity" min="10" max="100" value="50" class="range-slider">
+                         </div>
+
+                         <!-- Text Color (Only for Text Watermark) -->
+                         <div id="text-color-option">
+                             <label for="textColor" class="input-label">Text Color</label>
+                             <input type="color" id="textColor" value="#ffffff" class="h-10 w-full border border-gray-300 rounded-md cursor-pointer dark:border-gray-600">
+                         </div>
+
+                         <!-- Tiling & Position Options -->
+                         <fieldset class="border border-gray-300 dark:border-gray-600 rounded p-3 pt-1">
+                             <legend class="text-sm font-medium px-1 text-gray-600 dark:text-gray-300">Layout</legend>
+                             <div class="space-y-3">
+                                 <!-- Tiling Style -->
+                                 <div>
+                                     <label for="tileStyle" class="input-label">Tiling Style</label>
+                                     <select id="tileStyle" class="input-field">
+                                         <option value="none" selected>None (Single Position)</option>
+                                         <option value="grid">Grid</option>
+                                         <option value="staggered">Staggered Grid</option>
+                                         <option value="diagonal">Diagonal</option>
+                                     </select>
+                                 </div>
+
+                                 <!-- Position Controls (Shown when tileStyle is 'none') -->
+                                 <div id="position-controls">
+                                    <label class="input-label">Position</label>
+                                    <div class="grid grid-cols-3 gap-1 text-center">
+                                        <button data-position="top-left" class="position-btn"><i class="fas fa-arrow-up"></i><i class="fas fa-arrow-left"></i></button>
+                                        <button data-position="top-center" class="position-btn"><i class="fas fa-arrow-up"></i></button>
+                                        <button data-position="top-right" class="position-btn"><i class="fas fa-arrow-up"></i><i class="fas fa-arrow-right"></i></button>
+                                        <button data-position="middle-left" class="position-btn"><i class="fas fa-arrow-left"></i></button>
+                                        <button data-position="center" class="position-btn active"><i class="fas fa-crosshairs"></i></button>
+                                        <button data-position="middle-right" class="position-btn"><i class="fas fa-arrow-right"></i></button>
+                                        <button data-position="bottom-left" class="position-btn"><i class="fas fa-arrow-down"></i><i class="fas fa-arrow-left"></i></button>
+                                        <button data-position="bottom-center" class="position-btn"><i class="fas fa-arrow-down"></i></button>
+                                        <button data-position="bottom-right" class="position-btn"><i class="fas fa-arrow-down"></i><i class="fas fa-arrow-right"></i></button>
+                                    </div>
+                                 </div>
+
+                                 <!-- Tiling Settings (Shown when tileStyle is not 'none') -->
+                                 <div id="tile-settings" class="hidden space-y-3">
+                                     <div>
+                                         <label for="tileSpacing" class="input-label flex justify-between">Tile Spacing <span id="tileSpacingValue" class="font-mono">10%</span></label>
+                                         <input type="range" id="tileSpacing" min="0" max="100" value="10" step="5" class="range-slider">
+                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Relative to watermark size.</p>
+                                     </div>
+                                     <!-- Angle (Shown only for 'diagonal' style) -->
+                                     <div id="tile-angle-option" class="hidden">
+                                         <label for="tileAngle" class="input-label flex justify-between">Tile Angle <span id="tileAngleValue" class="font-mono">45°</span></label>
+                                         <input type="range" id="tileAngle" min="-90" max="90" value="45" step="5" class="range-slider">
+                                     </div>
+                                 </div>
+                             </div>
+                         </fieldset>
+                    </div>
+
+                    <!-- Invisible Watermark Options -->
+                    <div id="invisible-watermark-options" class="mb-6 space-y-4 hidden">
+                        <label class="input-label">Data to Hide</label>
+                        <!-- Invisible Data Type Selection -->
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                             <button data-inv-type="text" class="btn-tab-secondary active">Text</button>
+                             <button data-inv-type="logo" class="btn-tab-secondary">Logo</button>
+                        </div>
+                        <!-- Invisible Text Input -->
+                        <div id="invisible-text-options">
+                            <label for="secretMessage" class="input-label sr-only">Hidden Message</label>
+                            <textarea id="secretMessage" rows="3" placeholder="Enter your secret message" class="input-field">StegaMark Hidden Message</textarea>
+                        </div>
+                         <!-- Invisible Logo Input -->
+                         <div id="invisible-logo-options" class="hidden">
+                             <label for="invisibleLogoUpload" class="input-label sr-only">Logo to Hide</label>
+                             <input type="file" id="invisibleLogoUpload" accept="image/png" class="file-input">
+                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload PNG logo to hide.</p>
+                         </div>
+                         <!-- Encoding Strength -->
+                        <div>
+                            <label for="encodingStrength" class="input-label flex justify-between">Encoding Strength (LSB bits: <span id="lsbBitsValue">2</span>)<span id="encodingStrengthValue" class="font-mono">3</span></label>
+                            <input type="range" id="encodingStrength" min="1" max="5" value="3" class="range-slider">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Higher uses more LSBs (more robust, potential quality impact).</p>
+                        </div>
+                    </div>
+
+                    <!-- Apply Button -->
+                    <button id="apply-watermark" class="btn-primary w-full py-3 px-6 rounded-md font-medium flex items-center justify-center transition duration-300 ease-in-out" disabled>
+                        <span class="btn-text"><i class="fas fa-magic mr-2"></i> Apply Watermark</span>
+                        <i class="fas fa-spinner fa-spin btn-loading hidden ml-2"></i>
+                    </button>
+                     <!-- Apply Status Message -->
+                     <p id="apply-status" class="text-xs text-center mt-2 h-4"></p>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="card p-6 col-span-1 lg:col-span-2">
+                    <h2 class="text-xl font-bold mb-4 text-primary dark:text-secondary flex items-center"><i class="fas fa-eye mr-2"></i> Preview & Download</h2>
+
+                    <!-- Preview Area -->
+                    <div id="preview-container" class="watermark-container mb-4 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 dark:bg-gray-800/30 dark:border-gray-600 flex items-center justify-center relative overflow-hidden" style="min-height: 400px;">
+                        <!-- Placeholder Message -->
+                        <div id="no-image-message" class="text-center p-6 text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-image text-6xl mb-4"></i>
+                            <p>Upload an image to start</p>
+                        </div>
+                        <!-- Image Wrapper and Image -->
+                        <div id="watermark-preview-wrapper" class="absolute inset-0 flex items-center justify-center hidden w-full h-full">
+                            <img id="preview-image" class="max-w-full max-h-full object-contain block" alt="Image Preview"/>
+                            <!-- Watermarks will be overlaid programmatically by JS -->
+                        </div>
+                         <!-- Processing Overlay -->
+                         <div id="processing-overlay" class="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xl hidden">
+                            <i class="fas fa-spinner fa-spin mr-3"></i> Processing...
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-bar-container mb-4 hidden" id="progress-container">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+
+                    <!-- Download/Reset Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="download-btn" class="btn-secondary py-3 px-6 rounded-md font-medium flex-grow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center" disabled>
+                            <i class="fas fa-download mr-2"></i> Download
+                        </button>
+                        <button id="reset-btn" class="btn-accent py-3 px-6 rounded-md font-medium opacity-90 hover:opacity-100 flex items-center justify-center">
+                            <i class="fas fa-undo mr-2"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extract Watermark Section -->
+        <div id="section-extract" class="section hidden">
+            <div class="card p-6 max-w-3xl mx-auto">
+                <h2 class="text-xl font-bold mb-6 text-primary dark:text-secondary flex items-center"><i class="fas fa-search mr-2"></i> Extract Invisible Watermark</h2>
+
+                <!-- Image Upload for Extraction -->
+                <div class="mb-6">
+                    <label for="extractImageUpload" class="input-label">Watermarked Image</label>
+                    <input type="file" id="extractImageUpload" accept="image/png" class="file-input">
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload PNG image suspected to contain hidden data.</p>
+                </div>
+
+                <!-- Extraction Strength -->
+                <div class="mb-6">
+                    <label for="extractionStrength" class="input-label flex justify-between">Extraction Strength (LSB bits: <span id="extractLsbBitsValue">2</span>)<span id="extractionStrengthValue" class="font-mono">3</span></label>
+                     <input type="range" id="extractionStrength" min="1" max="5" value="3" class="range-slider">
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Must match the strength used during encoding.</p>
+                </div>
+
+                <!-- Extract Button -->
+                <button id="extract-watermark-btn" class="btn-primary w-full py-3 px-6 rounded-md font-medium mb-6 flex items-center justify-center" disabled>
+                    <span class="btn-text"><i class="fas fa-search-plus mr-2"></i> Extract Watermark</span>
+                    <i class="fas fa-spinner fa-spin btn-loading hidden ml-2"></i>
+                </button>
+                 <!-- Extract Status Message -->
+                 <p id="extract-status" class="text-xs text-center mt-2 h-4"></p>
+
+                <!-- Extract Progress Bar -->
+                <div class="progress-bar-container mb-4 hidden" id="extract-progress-container">
+                    <div id="extract-progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+
+                <!-- Extraction Result Area -->
+                <div id="extraction-result" class="hidden border rounded-md p-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 mt-6">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">Extraction Result</h3>
+                    <div id="extracted-content" class="p-3 bg-white dark:bg-gray-800 border rounded min-h-[100px] flex flex-col items-center justify-center">
+                        <p id="extracted-placeholder" class="text-gray-500 dark:text-gray-400">No data extracted yet.</p>
+                        <p id="extracted-message" class="text-gray-800 dark:text-gray-200 hidden whitespace-pre-wrap break-words w-full"></p>
+                        <img id="extracted-image" class="max-w-full max-h-64 hidden" alt="Extracted Logo"/>
+                        <p id="extracted-error" class="text-red-600 dark:text-red-400 hidden"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Python Code Section -->
+        <div id="section-code" class="section hidden">
+            <div class="card p-6">
+                <h2 class="text-xl font-bold mb-4 text-primary dark:text-secondary flex items-center"><i class="fab fa-python mr-2"></i> Python Backend Overview</h2>
+                <p class="mb-6 text-gray-700 dark:text-gray-300">
+                    The core logic of StegaMark Pro is powered by a Python backend using the Flask web framework and the Pillow image processing library. This script (`app.py`) handles image manipulation, steganography, and serves the web interface you are using.
+                </p>
+
+                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">Key Functionalities:</h3>
+
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-primary dark:text-secondary">1. Invisible Watermarking (LSB Steganography)</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 ml-4">
+                            - Hides data within the least significant bits (LSBs) of image pixels. Think of each pixel having color channels (Red, Green, Blue, sometimes Alpha), each represented by a number (usually 0-255). This number can be seen as 8 bits (e.g., 255 is <code class="code-inline">11111111</code>, 177 is <code class="code-inline">10110001</code>).<br>
+                            - The LSB is the rightmost bit (<code class="code-inline">1011000<span class="font-bold text-red-500">1</span></code>). Changing this bit causes only a tiny change in the color value (e.g., changing <code class="code-inline">10110001</code> (177) to <code class="code-inline">1011000<span class="font-bold text-red-500">0</span></code> (176)), which is usually imperceptible to the human eye.<br>
+                            - <code class="code-inline">encode_image</code>: Converts secret data (text/image) into a stream of 0s and 1s. It then iterates through the image pixels, replacing the LSB of selected color channels with the next bit from the secret stream. A unique delimiter (<code class="code-inline">DELIMITER_BIN</code>) is appended to mark the end.<br>
+                            - <code class="code-inline">decode_image</code>: Reads the LSBs from the image pixels in the same order, reconstructs the binary stream, and stops when it finds the delimiter, returning the data found before it.<br>
+                            - <code class="code-inline">Strength</code>: Controls how many LSBs (1 to 8) per channel are used. Higher strength embeds more data faster and is more robust to *some* compression, but makes larger changes to the pixel values, increasing the risk of visual artifacts. Requires lossless PNG format for saving, as JPEG compression destroys LSB data.
+                        </p>
+                        <!-- Simple Text Visual -->
+                        <div class="text-xs text-gray-500 dark:text-gray-400 ml-8 mt-1 mb-2 p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded inline-block">
+                            <strong class="block mb-1">LSB Example (1 bit):</strong>
+                            Original Pixel Value (Red): 177 = <code class="code-inline">1011000<span class="font-bold text-blue-500">1</span></code><br>
+                            Secret Bit to Hide: <code class="code-inline">0</code><br>
+                            New Pixel Value (Red): 176 = <code class="code-inline">1011000<span class="font-bold text-red-500">0</span></code> (LSB replaced)
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-primary dark:text-secondary">2. Visible Watermarking</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 ml-4">
+                            - Handled by the <code class="code-inline">add_visible_watermark</code> function.<br>
+                            - Supports both text and logo watermarks.<br>
+                            - Creates a transparent overlay layer (<code class="code-inline">watermark_layer</code>) the size of the base image.<br>
+                            - Renders the text (using Pillow's <code class="code-inline">ImageDraw</code> and <code class="code-inline">ImageFont</code>) or resizes the logo onto a temporary, transparent element image.<br>
+                            - Applies opacity to the watermark element.<br>
+                            - Calculates position (<code class="code-inline">_calculate_position</code>) for single placement or uses tiling logic for repeated patterns ('grid', 'staggered', 'diagonal').<br>
+                            - For tiling, it calculates step sizes based on watermark dimensions and spacing, potentially rotates the element ('diagonal' style), and pastes it repeatedly onto the overlay.<br>
+                            - Finally, composites the overlay onto the base image using <code class="code-inline">Image.alpha_composite</code>.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-primary dark:text-secondary">3. Web Interface (Flask)</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 ml-4">
+                            - Uses Flask (<code class="code-inline">app = Flask(__name__)</code>) to create a web server.<br>
+                            - <code class="code-inline">@app.route('/')</code>: Serves the main `index.html` page.<br>
+                            - <code class="code-inline">@app.route('/watermark', methods=['POST'])</code>: Handles watermark application requests. It parses form data (image, settings, text/logo), calls the appropriate watermarking function (<code class="code-inline">add_visible_watermark</code> or <code class="code-inline">LSBSteganography.encode_image</code>), and returns the resulting image file.<br>
+                            - <code class="code-inline">@app.route('/extract', methods=['POST'])</code>: Handles extraction requests. It receives the image and strength, calls <code class="code-inline">LSBSteganography.decode_image</code>, attempts to interpret the result (JSON metadata for text/image or raw bytes), and returns the findings as JSON.<br>
+                            - Includes error handling for file issues, data size limits, and processing errors.
+                        </p>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-primary dark:text-secondary">4. Command Line Interface (CLI)</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 ml-4">
+                            - Uses Python's <code class="code-inline">argparse</code> module to provide command-line access to the core functionalities.<br>
+                            - Subcommands (<code class="code-inline">encode-visible</code>, <code class="code-inline">encode-invisible</code>, <code class="code-inline">decode</code>, <code class="code-inline">web</code>) allow running operations directly from the terminal without the web UI.<br>
+                            - Provides an alternative way to integrate StegaMark into scripts or batch processes.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">Core Libraries:</h3>
+                 <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-6 ml-4">
+                    <li><strong class="font-medium">Pillow:</strong> For all image loading, manipulation, drawing, and saving operations.</li>
+                    <li><strong class="font-medium">Flask:</strong> For creating the web server and handling HTTP requests/responses.</li>
+                    <li><strong class="font-medium">Standard Libraries:</strong> <code class="code-inline">os</code>, <code class="code-inline">sys</code>, <code class="code-inline">math</code>, <code class="code-inline">base64</code>, <code class="code-inline">io</code>, <code class="code-inline">json</code>, <code class="code-inline">argparse</code>.</li>
+                 </ul>
+
+                <!-- Code Block -->
+                <div class="mb-6">
+                     <h4 class="text-md font-semibold mb-2 text-gray-700 dark:text-gray-300">Conceptual Example: How LSB Works</h4>
+                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        Imagine a single pixel's Red color value is 177. In binary (8 bits), this is <code class="code-inline">10110001</code>. The Least Significant Bit (LSB) is the rightmost bit (<code class="code-inline">1</code>).
+                        If we want to hide the secret bit <code class="code-inline">0</code>, we simply replace the LSB:
+                     </p>
+                     <!-- Enhanced Text Visual -->
+                     <div class="text-xs text-gray-500 dark:text-gray-400 ml-4 mb-3 p-3 border border-dashed border-gray-300 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700/50 inline-block">
+                         <strong class="block mb-1 text-gray-700 dark:text-gray-300">Example (1 LSB):</strong>
+                         Original Red Value: 177 = <code class="code-inline">1011000<span class="font-bold text-blue-500">1</span></code><br>
+                         Secret Bit to Hide: <code class="code-inline">0</code><br>
+                         New Red Value: 176 = <code class="code-inline">1011000<span class="font-bold text-red-500">0</span></code><br>
+                         <span class="text-gray-400 dark:text-gray-500 italic mt-1 block">Notice the tiny change (177 -> 176), visually negligible.</span>
+                     </div>
+                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        If using a higher <code class="code-inline">Strength</code> (e.g., 3 LSBs), we replace the last 3 bits. To hide <code class="code-inline">101</code> (which is 5 in decimal):
+                     </p>
+                      <div class="text-xs text-gray-500 dark:text-gray-400 ml-4 mb-4 p-3 border border-dashed border-gray-300 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700/50 inline-block">
+                         <strong class="block mb-1 text-gray-700 dark:text-gray-300">Example (3 LSBs):</strong>
+                         Original Red Value: 177 = <code class="code-inline">10110<span class="font-bold text-blue-500">001</span></code><br>
+                         Secret Bits to Hide: <code class="code-inline">101</code><br>
+                         New Red Value: 181 = <code class="code-inline">10110<span class="font-bold text-red-500">101</span></code><br>
+                         <span class="text-gray-400 dark:text-gray-500 italic mt-1 block">Change is larger (177 -> 181), potentially more noticeable.</span>
+                     </div>
+                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        The Python code below demonstrates the bitwise operations used to achieve this:
+                    </p>
+                    <div class="code-block group">
+                        <button class="copy-btn" data-clipboard-target="#python-code-example">
+                           <i class="far fa-copy"></i> Copy
+                        </button>
+                        <pre><code id="python-code-example" class="language-python">
+# Conceptual LSB Encoding Snippet (Simplified)
+# Example: Hiding the first letter 'S' from "StegaMark" using 1 LSB per color channel.
+
+# 1. Convert the character 'S' to its binary representation.
+#    - ASCII value of 'S' is 83.
+#    - 8-bit binary for 83 is 01010011.
+#    - These 8 bits need to be hidden sequentially.
+
+# 2. Take the first pixel's Red channel value (or the next available channel).
+pixel_value_1 = 177 # Example: Original Red value (Binary: 10110001)
+
+# 3. Take the first bit of 'S' to hide.
+first_secret_bit = '0' # First bit from '01010011'
+
+# 4. Modify the pixel value to hide this bit in its LSB.
+#    Goal: Change LSB of 10110001 to match '0'. Expected: 10110000 (176)
+
+#    a. Create mask to clear the LSB: 254 (11111110)
+clear_mask_1 = 254
+#    b. Apply mask using bitwise AND (&):
+#       10110001 (177) & 11111110 (254) = 10110000 (176)
+cleared_value_1 = pixel_value_1 & clear_mask_1
+#    c. Convert secret bit '0' to integer 0.
+secret_bit_value_1 = int(first_secret_bit, 2)
+#    d. Insert secret bit using bitwise OR (|):
+#       10110000 (176) | 00000000 (0) = 10110000 (176)
+new_pixel_value_1 = cleared_value_1 | secret_bit_value_1
+
+# 5. Move to the next pixel's color channel (e.g., Green channel of the same pixel, or Red of the next pixel).
+pixel_value_2 = 215 # Example: Original Green value (Binary: 11010111)
+
+# 6. Take the second bit of 'S' to hide.
+second_secret_bit = '1' # Second bit from '01010011'
+
+# 7. Modify the second pixel value to hide this bit in its LSB.
+#    Goal: Change LSB of 11010111 to match '1'. Expected: 11010111 (215 - no change needed!)
+
+#    a. Clear LSB: 215 & 254 = 214 (11010110)
+cleared_value_2 = pixel_value_2 & clear_mask_1
+#    b. Convert secret bit '1' to integer 1.
+secret_bit_value_2 = int(second_secret_bit, 2)
+#    c. Insert secret bit:
+#       11010110 (214) | 00000001 (1) = 11010111 (215)
+new_pixel_value_2 = cleared_value_2 | secret_bit_value_2
+
+# 8. Repeat this process for all 8 bits of 'S' (01010011), using 8 consecutive
+#    pixel color values. Then continue for the next character 't', and so on,
+#    until the entire message "StegaMark" and the delimiter are hidden.
+
+# --- Example using 3 LSBs (Conceptual) ---
+# If strength=3 was used, we'd hide 3 bits at a time.
+# To hide the first 3 bits of 'S' ('010'):
+bits_to_hide = '010' # First 3 bits of 'S'
+strength = 3
+pixel_value_3lsb = 177 # Original value (10110001)
+
+# Goal: Change last 3 bits of 10110001 to match '010'. Expected: 10110010 (178)
+
+# a. Create mask to clear last 3 bits: 248 (11111000)
+clear_mask_3 = 0xFF << strength & 0xFF
+# b. Clear the bits: 177 & 248 = 176 (10110000)
+cleared_value_3lsb = pixel_value_3lsb & clear_mask_3
+# c. Convert secret bits '010' to integer 2.
+secret_bits_value_3lsb = int(bits_to_hide, 2)
+# d. Insert secret bits: 176 | 2 = 178 (10110010)
+new_value_3lsb = cleared_value_3lsb | secret_bits_value_3lsb
+
+# --- Output ---
+print(f"--- Hiding 'S' (01010011) bit by bit (1 LSB) ---")
+print(f"Pixel 1 Original: {pixel_value_1} ({pixel_value_1:08b}), Secret Bit: '{first_secret_bit}', New Value: {new_pixel_value_1} ({new_pixel_value_1:08b})")
+print(f"Pixel 2 Original: {pixel_value_2} ({pixel_value_2:08b}), Secret Bit: '{second_secret_bit}', New Value: {new_pixel_value_2} ({new_pixel_value_2:08b})")
+print(f"... process continues for remaining 6 bits of 'S' and rest of message ...")
+print(f"\n--- Hiding first 3 bits '010' of 'S' (3 LSBs) ---")
+print(f"Pixel Original: {pixel_value_3lsb} ({pixel_value_3lsb:08b}), Secret Bits: '{bits_to_hide}', New Value: {new_value_3lsb} ({new_value_3lsb:08b})")
+
+</code></pre>
+                    </div>
+                </div>
+                 <!-- Example Usage Info -->
+                 <p class="text-sm text-gray-600 dark:text-gray-400">
+                     <strong>Example CLI Usage:</strong><br>
+                     <code class="code-inline">python app.py encode-invisible --input input.png --message "Secret" --output encoded.png --strength 3</code><br>
+                     <code class="code-inline">python app.py decode --input encoded.png --strength 3</code><br>
+                     <code class="code-inline">python app.py encode-visible --input input.jpg --text "© Me" --output visible.jpg --position bottom-right</code><br>
+                     <code class="code-inline">python app.py web</code>
+                 </p>
+            </div>
+        </div>
+
+        <style>
+            /* Add simple style for inline code */
+            .code-inline {
+                background-color: rgba(100, 116, 139, 0.1); /* gray-500 transparent */
+                padding: 0.1em 0.3em;
+                border-radius: 0.25rem;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 0.9em;
+            }
+            body.dark .code-inline {
+                 background-color: rgba(156, 163, 175, 0.2); /* gray-400 transparent */
+            }
+        </style>
+    </main>
+
+    <footer class="mt-12 py-6 px-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-dark-bg/50">
+        <div class="container mx-auto text-center text-sm">
+            <p class="text-gray-700 dark:text-gray-300">StegaMark Pro v2.1 - Advanced Watermarking & Steganography</p>
+            <p class="mt-1 text-gray-500 dark:text-gray-300">© 2023. All rights reserved.</p> <!-- Consider updating year -->
+        </div>
+    </footer>
+
+    <!-- Include ClipboardJS for copy button -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+    <!-- Include Main JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>

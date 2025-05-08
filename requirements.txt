@@ -1,0 +1,4 @@
+Pillow>=9.0.0
+# numpy>=1.20.0 # Only include if your Python code actually uses numpy. Your app.py doesn't seem to.
+Flask>=2.0.0
+Flask-CORS>=3.0.0
