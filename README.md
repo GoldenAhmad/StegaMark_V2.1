@@ -1,106 +1,131 @@
-# StegaMark V2.1
+# 🌊 StegaMark Pro v2.1
 
-**StegaMark V2.1** is a web-based application designed to embed and detect watermarks in images using basic steganography techniques.  
-It was developed as part of the *Image Processing* course at **Imam Abdulrahman Bin Faisal University**.
-
-## Project Overview
-
-StegaMark allows users to:
-- Upload an image.
-- Embed a hidden watermark text into the image.
-- Download the watermarked image.
-- Extract and read the hidden watermark from a watermarked image.
-
-The system is designed with a simple web interface using **Flask** for the backend and **HTML/CSS/JavaScript** for the frontend.
+**StegaMark Pro v2.1** is a modern web-based application developed for embedding and detecting watermarks in images using both **visible watermarking** and **invisible steganography techniques (LSB)**.
+It was created as part of the *Image Processing* course at **Imam Abdulrahman Bin Faisal University**.
 
 ---
 
-## Features
+## 🚀 Live Demo
 
-- **Image Uploading**: Users can upload PNG/JPG images.
-- **Watermark Embedding**: Hide custom text into an image.
-- **Watermark Extraction**: Retrieve hidden text from a watermarked image.
-- **Simple UI**: Easy-to-use web interface.
-- **Lightweight Backend**: Built with Python Flask.
+* **Frontend:** [StegaMark Pro GitHub Pages](https://goldenahmad.github.io/StegaMark_V2.1/)
+* **Backend API:** [PythonAnywhere Endpoint](https://0QuQ.pythonanywhere.com)
 
 ---
 
-## Team Members
+## ✨ Features
 
-- **Turki Alshuaibi** — Team Leader
-- **Ahmed Alakder** — Head Developer
-- **Anas Algamdi** — Developer
-- **Hamza Alzahrani** — Developer
-- **Khalid Alomair** — Developer
+### 🔒 Invisible Watermarking (LSB Steganography)
 
----
+* Hide text or small logos inside image pixels
+* Adjustable encoding strength (choose number of LSBs)
+* Extract hidden messages easily
 
-## How to Run the Project
+### 💧 Visible Watermarking
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/Turki-Sh/StegaMark_V2.1.git
-   cd StegaMark_V2.1
-   ```
+* Add text or logo overlays
+* Customize opacity, position, color, rotation, and tiling (grid, diagonal, etc.)
+* Live preview before applying
 
-2. **Install the Required Packages**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 🖼️ User-Friendly Web Interface
 
-3. **Run the Flask Application**:
-   ```bash
-   python app.py
-   ```
+* Upload and preview images
+* Dark/Light theme toggle
+* Download final watermarked images
 
-4. **Open the Web App**:
-   Navigate to `http://localhost:5000` in your web browser.
+### 🧪 Additional Capabilities
+
+* Simple CLI through `app.py` for batch watermarking
+* Secure backend (Flask + Pillow)
+* REST API: `/watermark`, `/extract`
 
 ---
 
-## Project Structure
+## 🛠️ Project Structure
 
 ```
 StegaMark_V2.1/
-├── app.py             # Flask backend handling upload and watermark logic
-├── index.html         # Main frontend page
-├── main.js            # JavaScript for handling frontend actions
-├── style.css          # Styling for the web app
-├── requirements.txt   # Required Python packages
-├── python/            # Contains watermarking logic (encoding/decoding)
-│   ├── watermark.py
-├── git/               # Git-related configuration (if used)
+├── app.py             # Flask backend
+├── index.html         # Frontend HTML
+├── main.js            # Frontend JS logic
+├── style.css          # Styling
+├── requirements.txt   # Python packages
+├── python/            # Watermark encoding/decoding logic
+│   └── watermark.py
+├── git/               # Git-related config
 ├── StegaMarkLogo.webp # Logo image
 ```
 
 ---
 
-## Technologies Used
+## 💻 Technologies Used
 
-- **Python 3**
-- **Flask**
-- **HTML5**
-- **CSS3**
-- **JavaScript**
+* **Python 3**, **Flask**, **Pillow**
+* **HTML5**, **CSS3** (Tailwind), **JavaScript**
+* **GitHub Pages**, **PythonAnywhere**
 
 ---
 
-## Screenshots
+## 📥 How to Run Locally
 
-![image](https://github.com/user-attachments/assets/5e9094e6-477e-4c76-b788-609106ec7ec5)
+**Clone the Repository:**
 
+```bash
+git clone https://github.com/Turki-Sh/StegaMark_V2.1.git
+cd StegaMark_V2.1
+```
 
+**Install Requirements:**
+
+```bash
+python -m venv venv
+venv\Scripts\activate  # Windows
+# or
+source venv/bin/activate  # macOS/Linux
+pip install -r requirements.txt
+```
+
+**Run Flask App:**
+
+```bash
+python app.py web
+```
+
+**Set Frontend Endpoint:**
+
+* In `main.js`, make sure the backend URL is set:
+
+```js
+const BACKEND_URL = 'http://127.0.0.1:5000';
+```
+
+Open `index.html` in your browser.
 
 ---
 
-## Future Improvements
+## 👥 Team Members
 
-- Improve watermark robustness.
-- Support more image formats.
-- Add password protection for watermarking.
+* **Turki Alshuaibi** — Team Leader
+* **Ahmed Alakder** — Head Developer
+* **Anas Algamdi** — Developer
+* **Hamza Alzahrani** — Developer
+* **Khalid Alomair** — Developer
 
 ---
 
-## Acknowledgments
+## 🔮 Future Improvements
 
-This project was developed as part of an academic requirement under the supervision of the Department of Computer Science, Imam Abdulrahman Bin Faisal University.
+* Add password protection for watermarking
+* Support additional image formats
+* Enhance watermark detection robustness
+
+---
+
+## 📜 License
+
+Open source under the **MIT License**
+
+---
+
+## 🎓 Acknowledgments
+
+This project was developed as an academic requirement under the supervision of the Department of Computer Science at **Imam Abdulrahman Bin Faisal University**.
