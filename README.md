@@ -1,118 +1,131 @@
 # 🌊 StegaMark Pro v2.1
 
-**An Advanced Image Processing Project for Watermarking & Steganography**
+**StegaMark Pro v2.1** is a modern web-based application developed for embedding and detecting watermarks in images using both **visible watermarking** and **invisible steganography techniques (LSB)**.
+It was created as part of the *Image Processing* course at **Imam Abdulrahman Bin Faisal University**.
 
 ---
 
-![StegaMark Logo](StegaMarkLogo.webp)
+## 🚀 Live Demo
 
-StegaMark Pro is a modern web application that demonstrates advanced image processing techniques for both visible and invisible (steganographic) watermarking. With a sleek interface and robust Python backend, it empowers users to protect and analyze images with ease.
-
----
-
-## 🚀 Try It Live
-
-- **Frontend:** [StegaMark Pro on GitHub Pages](https://goldenahmad.github.io/StegaMark_V2.1/)
-- **Backend:** Hosted on PythonAnywhere ([API root](https://0QuQ.pythonanywhere.com))
+* **Frontend:** [StegaMark Pro GitHub Pages](https://goldenahmad.github.io/StegaMark_V2.1/)
+* **Backend API:** [PythonAnywhere Endpoint](https://0QuQ.pythonanywhere.com)
 
 ---
 
 ## ✨ Features
 
-- **Visible Watermarking**
-  - Add text or logo watermarks
-  - Control opacity, position, color, and tiling (Grid, Staggered, Diagonal, Single)
-  - Adjustable tile spacing and angle
-- **Invisible Watermarking (LSB Steganography)**
-  - Hide text messages or small logos within image pixels
-  - Adjustable encoding strength (number of LSBs used)
-- **Watermark Extraction**
-  - Extract hidden data from images watermarked using LSB
-- **User-Friendly Web Interface**
-  - Live preview for visible watermarks
-  - Image upload/download
-  - Dark/Light theme toggle
-- **Python Backend**
-  - Flask server with Pillow (PIL) for image manipulation
-  - REST API endpoints: `/watermark`, `/extract`
-- **Command Line Interface**
-  - Use `app.py` directly for batch or scripted watermarking
+### 🔒 Invisible Watermarking (LSB Steganography)
+
+* Hide text or small logos inside image pixels
+* Adjustable encoding strength (choose number of LSBs)
+* Extract hidden messages easily
+
+### 💧 Visible Watermarking
+
+* Add text or logo overlays
+* Customize opacity, position, color, rotation, and tiling (grid, diagonal, etc.)
+* Live preview before applying
+
+### 🖼️ User-Friendly Web Interface
+
+* Upload and preview images
+* Dark/Light theme toggle
+* Download final watermarked images
+
+### 🧪 Additional Capabilities
+
+* Simple CLI through `app.py` for batch watermarking
+* Secure backend (Flask + Pillow)
+* REST API: `/watermark`, `/extract`
 
 ---
 
-## 🛠️ How It Works
+## 🛠️ Project Structure
 
-StegaMark Pro is an image processing system with two main components:
-
-### 1. Frontend
-- Built with HTML, CSS (Tailwind), and JavaScript
-- Provides an interactive UI for uploading images, configuring watermark options, and viewing results
-- Communicates with the backend for all image processing tasks
-
-### 2. Backend
-- Python Flask application (`app.py`)
-- Handles all watermarking and extraction logic
-- Uses Pillow (PIL) for pixel-level image operations
-- Hosted live on PythonAnywhere
+```
+StegaMark_V2.1/
+├── app.py             # Flask backend
+├── index.html         # Frontend HTML
+├── main.js            # Frontend JS logic
+├── style.css          # Styling
+├── requirements.txt   # Python packages
+├── python/            # Watermark encoding/decoding logic
+│   └── watermark.py
+├── git/               # Git-related config
+├── StegaMarkLogo.webp # Logo image
+```
 
 ---
 
-## 📦 Download & Run Locally
+## 💻 Technologies Used
 
-**1. Clone the Repository:**
+* **Python 3**, **Flask**, **Pillow**
+* **HTML5**, **CSS3** (Tailwind), **JavaScript**
+* **GitHub Pages**, **PythonAnywhere**
+
+---
+
+## 📥 How to Run Locally
+
+**Clone the Repository:**
+
 ```bash
-git clone https://github.com/GoldenAhmad/StegaMark_V2.1.git
+git clone https://github.com/Turki-Sh/StegaMark_V2.1.git
 cd StegaMark_V2.1
 ```
 
-**2. Backend (Python Flask Server):**
+**Install Requirements:**
+
 ```bash
 python -m venv venv
-venv\Scripts\activate  # On Windows
+venv\Scripts\activate  # Windows
 # or
-source venv/bin/activate  # On macOS/Linux
+source venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
+```
+
+**Run Flask App:**
+
+```bash
 python app.py web
 ```
-- The backend will start at `http://127.0.0.1:5000`
 
-**3. Frontend (Web Interface):**
-- Open `main.js` and set:
-  ```js
-  const BACKEND_URL = 'http://127.0.0.1:5000';
-  ```
-- Open `index.html` in your browser
+**Set Frontend Endpoint:**
 
----
+* In `main.js`, make sure the backend URL is set:
 
-## 🧑‍🔬 Scientific & Technical Highlights
+```js
+const BACKEND_URL = 'http://127.0.0.1:5000';
+```
 
-- **Image Processing:**
-  - Uses Pillow for watermark blending, tiling, and LSB steganography
-  - Supports both visible and invisible watermarking in a single workflow
-- **Web Technologies:**
-  - Modern, responsive UI with theme support
-  - RESTful API design for easy integration
-- **Security:**
-  - CORS configured for safe cross-origin requests
-- **Open Source:**
-  - Easily extensible for research or educational purposes
+Open `index.html` in your browser.
 
 ---
 
-## 🖥️ Technologies Used
+## 👥 Team Members
 
-- **Python 3**, **Flask**, **Pillow (PIL)**
-- **HTML5**, **CSS3** (Tailwind), **JavaScript**
-- **GitHub Pages** (frontend hosting)
-- **PythonAnywhere** (backend hosting)
-
----
-
-## 📚 License
-
-This project is open source and available under the MIT License.
+* **Turki Alshuaibi** — Team Leader
+* **Ahmed Alakder** — Head Developer
+* **Anas Algamdi** — Developer
+* **Hamza Alzahrani** — Developer
+* **Khalid Alomair** — Developer
 
 ---
 
-> **Developed by [GoldenAhmad](https://github.com/GoldenAhmad) — 2025**
+## 🔮 Future Improvements
+
+* Add password protection for watermarking
+* Support additional image formats
+* Enhance watermark detection robustness
+
+---
+
+## 📜 License
+
+Open source under the **MIT License**
+
+---
+
+## 🎓 Acknowledgments
+
+This project was developed as an academic requirement under the supervision of the Department of Computer Science at **Imam Abdulrahman Bin Faisal University**.
